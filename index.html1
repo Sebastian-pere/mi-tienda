@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ferretería & Embalaje PRO</title>
+
+<style>
+body { font-family: Arial; margin:0; background:#f4f4f4; }
+
+header {
+background:#ff6600;
+color:white;
+text-align:center;
+padding:15px;
+}
+
+.productos {
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:20px;
+padding:20px;
+}
+
+.producto {
+background:white;
+padding:15px;
+border-radius:10px;
+text-align:center;
+box-shadow:0 2px 5px rgba(0,0,0,0.1);
+}
+
+.producto img { width:100%; border-radius:10px; }
+
+button {
+background:#25D366;
+color:white;
+border:none;
+padding:8px;
+margin:5px;
+border-radius:5px;
+cursor:pointer;
+}
+
+.carrito {
+position:fixed;
+right:0;
+top:0;
+width:280px;
+height:100%;
+background:white;
+padding:15px;
+box-shadow:-2px 0 5px rgba(0,0,0,0.2);
+overflow:auto;
+}
+
+input {
+width:100%;
+padding:8px;
+margin:5px 0;
+}
+
+.total {
+font-weight:bold;
+margin-top:10px;
+}
+</style>
+
+</head>
+
+<body>
+
+<header>
+<h1>🔧 Ferretería & Embalaje</h1>
+<p>Pedidos rápidos por WhatsApp</p>
+</header>
+
+<div class="productos">
+
+<div class="producto">
+<img src="https://via.placeholder.com/200">
+<h3>Cinta de Embalaje</h3>
+<p>S/ 5</p>
+<button onclick="agregar('Cinta',5)">Agregar</button>
+</div>
+
+<div class="producto">
+<img src="https://via.placeholder.com/200">
+<h3>Caja de Cartón</h3>
+<p>S/ 3.5</p>
+<button onclick="agregar('Caja',3.5)">Agregar</button>
+</div>
+
+<div class="producto">
+<img src="https://via.placeholder.com/200">
+<h3>Martillo</h3>
+<p>S/ 25</p>
+<button onclick="agregar('Martillo',25)">Agregar</button>
+</div>
+
+<div class="producto">
+<img src="https://via.placeholder.com/200">
+<h3>Taladro</h3>
+<p>S/ 120</p>
+<button onclick="agregar('Taladro',120)">Agregar</button>
+</div>
+
+<div class="producto">
+<img src="https://via.placeholder.com/200">
+<h3>Plástico Burbuja</h3>
+<p>S/ 15</p>
+<button onclick="agregar('Burbuja',15)">Agregar</button>
+</div>
+
+</div>
+
+<div class="carrito">
+<h2>🛒 Pedido</h2>
+
+<ul id="lista"></ul>
+
+<p class="total">Total: S/ <span id="total">0</span></p>
+
+<h3>Datos del cliente</h3>
+<input id="nombre" placeholder="Nombre">
+<input id="direccion" placeholder="Dirección">
+
+<button onclick="enviar()">Enviar pedido</button>
+</div>
+
+<script>
+let carrito = {};
+let numero = "51923289211";
+
+function agregar(nombre, precio){
+if(!carrito[nombre]){
+carrito[nombre] = {precio:precio, cantidad:1};
+}else{
+carrito[nombre].cantidad++;
+}
+render();
+}
+
+function cambiar(nombre, delta){
+carrito[nombre].cantidad += delta;
+if(carrito[nombre].cantidad <= 0){
+delete carrito[nombre];
+}
+render();
+}
+
+function render(){
+let lista = document.getElementById("lista");
+lista.innerHTML = "";
+let total = 0;
+
+for(let item in carrito){
+let p = carrito[item];
+total += p.precio * p.cantidad;
+
+let li = document.createElement("li");
+li.innerHTML = `
+${item} (S/ ${p.precio}) x ${p.cantidad}
+<button onclick="cambiar('${item}',1)">+</button>
+<button onclick="cambiar('${item}',-1)">-</button>
+`;
+lista.appendChild(li);
+}
+
+document.getElementById("total").textContent = total.toFixed(2);
+}
+
+function enviar(){
+let nombre = document.getElementById("nombre").value;
+let direccion = document.getElementById("direccion").value;
+
+if(!nombre || !direccion){
+alert("Completa tus datos");
+return;
+}
+
+let mensaje = "🧾 Pedido:%0A";
+
+let total = 0;
+
+for(let item in carrito){
+let p = carrito[item];
+mensaje += `- ${item} x${p.cantidad} (S/ ${p.precio})%0A`;
+total += p.precio * p.cantidad;
+}
+
+mensaje += `%0ATotal: S/ ${total.toFixed(2)}%0A`;
+mensaje += `%0A👤 Nombre: ${nombre}%0A📍 Dirección: ${direccion}`;
+
+let url = "https://wa.me/" + numero + "?text=" + mensaje;
+window.open(url,"_blank");
+}
+</script>
+
+</body>
+</html>
